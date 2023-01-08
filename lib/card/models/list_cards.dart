@@ -2,17 +2,7 @@ import 'package:flutter/material.dart';
 import 'card_core.dart';
 
 class ListCard {
-  List<CardCore> listCards = [
-    CardCore(
-      title: 'Eat',
-      completed: false,
-    ),
-    CardCore(
-      title: 'Sleep',
-      completed: false,
-    ),
-    CardCore(title: 'Miss her', completed: true),
-  ];
+  List<CardCore> listCards = [];
 
   void addCard(CardCore card) {
     listCards.add(card);

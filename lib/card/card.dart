@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todo_app/card/models/card_core.dart';
 import 'package:todo_app/card/models/list_cards.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:todo_app/services/database.dart';
 
 class MyCard extends StatefulWidget {
   CardCore card;
@@ -13,6 +14,22 @@ class MyCard extends StatefulWidget {
 }
 
 class _MyCardState extends State<MyCard> {
+  ListCard _listCard = ListCard();
+
+  void changeTitleCardToFirestore(CardCore card, String val) {
+    DatabaseService(id: card.id).updateCardData(
+      val,
+      card.completed,
+    );
+  }
+
+  void changeCheckBoxCardToFirestore(CardCore card, bool val) {
+    DatabaseService(id: card.id).updateCardData(
+      card.title,
+      val,
+    );
+  }
+
   void _showMaterialDialog() {
     showDialog(
         context: context,
@@ -27,6 +44,7 @@ class _MyCardState extends State<MyCard> {
                   validator: (val) => val!.isEmpty ? 'Enter new title' : null,
                   onChanged: (val) {
                     setState(() => widget.card.title = val);
+                    changeTitleCardToFirestore(widget.card, val);
                   },
                 ),
               ),
@@ -82,6 +100,7 @@ class _MyCardState extends State<MyCard> {
                         setState(() {
                           widget.card.Changed();
                         });
+                        changeCheckBoxCardToFirestore(widget.card, value!);
                       },
                       value: widget.card.completed,
                     ),

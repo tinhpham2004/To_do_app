@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:todo_app/card/models/card_core.dart';
 import 'package:todo_app/card/models/list_cards.dart';
 import 'package:todo_app/card/card.dart';
+import 'package:todo_app/services/database.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -11,20 +12,29 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  CardCore card = CardCore(title: 'Type something here', completed: false);
-
   ListCard _listCard = ListCard();
 
   void deleteCard(CardCore card) {
     setState(() {
       _listCard.deleteCard(card);
     });
+    DatabaseService(id: card.id).deleteCardData();
   }
 
   void addCard(CardCore card) {
     setState(() {
       _listCard.addCard(card);
     });
+  }
+
+  void addCardToFirestore() {
+    CardCore temp = _listCard.listCards.last;
+
+    // create a new document for the card
+    DatabaseService(id: temp.id).updateCardData(
+      temp.title,
+      temp.completed,
+    );
   }
 
   @override
@@ -50,8 +60,15 @@ class _HomeScreenState extends State<HomeScreen> {
         itemCount: _listCard.listCards.length,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          addCard(card);
+        onPressed: () async {
+          addCard(
+            CardCore(
+              id: _listCard.listCards.length.toString(),
+              title: 'Type something here',
+              completed: false,
+            ),
+          );
+          addCardToFirestore();
         },
         backgroundColor: Colors.blue,
         child: Icon(
