@@ -14,11 +14,14 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   ListCard _listCard = ListCard();
 
+  var checkList = List<int>.filled(1, 0, growable: true);
+
   void deleteCard(CardCore card) {
     setState(() {
       _listCard.deleteCard(card);
     });
     DatabaseService(id: card.id).deleteCardData();
+    checkList[int.parse(card.id)] = int.parse(card.id);
   }
 
   void addCard(CardCore card) {
@@ -61,14 +64,21 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
+          var idex = checkList.firstWhere((element) => element != -1,
+              orElse: () => -1);
+          if (idex == -1) {
+            checkList.add(checkList.length);
+            idex = checkList.last;
+          }
           addCard(
             CardCore(
-              id: _listCard.listCards.length.toString(),
+              id: idex.toString(),
               title: 'Type something here',
               completed: false,
             ),
           );
           addCardToFirestore();
+          checkList[idex] = -1;
         },
         backgroundColor: Colors.blue,
         child: Icon(
